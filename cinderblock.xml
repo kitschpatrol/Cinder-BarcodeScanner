@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+	<block
+	name="BarcodeScanner"
+	id="com.kitschpatrol.barcode"
+	git="https://github.com/kitschpatrol/Cinder-BarcodeScanner.git"
+	url="https://github.com/kitschpatrol/Cinder-BarcodeScanner"
+	author="Eric Mika."
+	summary="Simple wrapper for communicating with barcode scanners using the Simple Serial Interface."
+	version="1.0.0"
+	library="https://atgsupportcentral.motorolasolutions.com/content/emb/docs/manuals/4045103a.pdf"
+	license="MIT" >
+		<supports os="msw" />
+		<supports os="macosx" />
+		<headerPattern>src/*.h</headerPattern>
+		<sourcePattern>src/*.cpp</sourcePattern>
+		<includePath system="false">src</includePath>
+	</block>
+</cinder>
