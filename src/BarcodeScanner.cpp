@@ -77,6 +77,11 @@ uint16_t BarcodeScanner::calculateChecksum(std::vector<uint8_t> bytes) {
 	return twosComplement;
 }
 
+void BarcodeScanner::simulateScan(std::string barcode) {
+	mLatestBarcode = barcode;
+	mSignalBarcodeScanned.emit(mLatestBarcode);
+}
+
 void BarcodeScanner::enable() {
 	sendMessage(0xE9);
 }

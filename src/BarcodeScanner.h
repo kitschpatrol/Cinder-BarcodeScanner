@@ -29,6 +29,7 @@ public:
 	void sleep();
 	void wake();
 
+	void simulateScan(std::string barcode);
 	const std::string getLatestBarcode() const;
 	ci::signals::Signal<void(std::string)> *getSignalBarcodeScanned();
 
