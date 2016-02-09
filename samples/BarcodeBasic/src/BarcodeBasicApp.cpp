@@ -42,8 +42,8 @@ void BarcodeBasicApp::setup() {
 	mParams->addButton("LED Off", std::bind(&BarcodeScanner::ledOff, mBarcodeScanner), "key=o");
 	mParams->addButton("Start Session", std::bind(&BarcodeScanner::startSession, mBarcodeScanner), "key=s");
 	mParams->addButton("Stop Session", std::bind(&BarcodeScanner::stopSession, mBarcodeScanner), "key=p");
-	mParams->addButton("Sleep", std::bind(&BarcodeScanner::startSession, mBarcodeScanner), "key=s");
-	mParams->addButton("Wake", std::bind(&BarcodeScanner::stopSession, mBarcodeScanner), "key=w");
+	mParams->addButton("Sleep", std::bind(&BarcodeScanner::sleep, mBarcodeScanner), "key=z");
+	mParams->addButton("Wake", std::bind(&BarcodeScanner::wake, mBarcodeScanner), "key=w");
 	mParams->addButton("Simulate", [&]() {
 		std::string randomBarcode = std::to_string(randInt(100000000, 999999999));
 		mBarcodeScanner->simulateScan(randomBarcode);
