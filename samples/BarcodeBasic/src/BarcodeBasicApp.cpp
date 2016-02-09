@@ -2,6 +2,8 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/params/Params.h"
+#include "cinder/Rand.h"
 
 #include "BarcodeScanner.h"
 
@@ -13,11 +15,10 @@ using namespace kp::barcode;
 class BarcodeBasicApp : public App {
 public:
 	void setup() override;
-	void mouseDown(MouseEvent event) override;
-	void keyDown(KeyEvent event) override;
 	void update() override;
 	void draw() override;
 	BarcodeScannerRef mBarcodeScanner;
+	ci::params::InterfaceGlRef	mParams;
 };
 
 void BarcodeBasicApp::setup() {
@@ -25,76 +26,40 @@ void BarcodeBasicApp::setup() {
 	mBarcodeScanner = BarcodeScanner::create("COM3");
 
 	mBarcodeScanner->getSignalBarcodeScanned()->connect([](std::string barcode) { //
-		CI_LOG_V("Scanned: " + barcode);																						//
+		CI_LOG_V("Scanned: " + barcode);                                          //
 	});
-}
 
-void BarcodeBasicApp::mouseDown(MouseEvent event) {
-	mBarcodeScanner->beep();
-}
+	// Not all scanners will support all of these options.
+	mParams = params::InterfaceGl::create("Params", ivec2(170, 300));
+	mParams->addButton("Beep", std::bind(&BarcodeScanner::beep, mBarcodeScanner), "key=b");
+	mParams->addButton("Enable", std::bind(&BarcodeScanner::enable, mBarcodeScanner), "key=e");
+	mParams->addButton("Disable", std::bind(&BarcodeScanner::disable, mBarcodeScanner), "key=d");
+	mParams->addButton("Aim On", std::bind(&BarcodeScanner::aimOn, mBarcodeScanner), "key=a");
+	mParams->addButton("Aim Off", std::bind(&BarcodeScanner::aimOff, mBarcodeScanner), "key=f");
+	mParams->addButton("Illumination On", std::bind(&BarcodeScanner::illuminationOn, mBarcodeScanner), "key=i");
+	mParams->addButton("Illumination Off", std::bind(&BarcodeScanner::illuminationOff, mBarcodeScanner), "key=n");
+	mParams->addButton("LED On", std::bind(&BarcodeScanner::ledOn, mBarcodeScanner), "key=l");
+	mParams->addButton("LED Off", std::bind(&BarcodeScanner::ledOff, mBarcodeScanner), "key=o");
+	mParams->addButton("Start Session", std::bind(&BarcodeScanner::startSession, mBarcodeScanner), "key=s");
+	mParams->addButton("Stop Session", std::bind(&BarcodeScanner::stopSession, mBarcodeScanner), "key=p");
+	mParams->addButton("Sleep", std::bind(&BarcodeScanner::startSession, mBarcodeScanner), "key=s");
+	mParams->addButton("Wake", std::bind(&BarcodeScanner::stopSession, mBarcodeScanner), "key=w");
+	mParams->addButton("Simulate", [&]() {
+		std::string randomBarcode = std::to_string(randInt(100000000, 999999999));
+		mBarcodeScanner->simulateScan(randomBarcode);
+		mBarcodeScanner->beep();
+	}, "key=b");
 
-void BarcodeBasicApp::keyDown(cinder::app::KeyEvent event) {
-	switch (event.getChar()) {
-		case KeyEvent::KEY_b:
-			CI_LOG_V("Beep");
-			mBarcodeScanner->beep();
-			break;
-		case KeyEvent::KEY_e:
-			CI_LOG_V("Enable");
-			mBarcodeScanner->enable();
-			break;
-		case KeyEvent::KEY_d:
-			CI_LOG_V("Disable");
-			mBarcodeScanner->disable();
-			break;
-		case KeyEvent::KEY_a:
-			CI_LOG_V("Aim On");
-			mBarcodeScanner->aimOn();
-			break;
-		case KeyEvent::KEY_o:
-			CI_LOG_V("Aim Off");
-			mBarcodeScanner->aimOff();
-			break;
-		case KeyEvent::KEY_i:
-			CI_LOG_V("Illumination On");
-			mBarcodeScanner->illuminationOn();
-			break;
-		case KeyEvent::KEY_f:
-			CI_LOG_V("Illumination Off");
-			mBarcodeScanner->illuminationOff();
-			break;
-		case KeyEvent::KEY_k:
-			CI_LOG_V("LED Off");
-			mBarcodeScanner->ledOff();
-			break;
-		case KeyEvent::KEY_l:
-			CI_LOG_V("LED On");
-			mBarcodeScanner->ledOn();
-			break;
-		case KeyEvent::KEY_s:
-			CI_LOG_V("Start Session");
-			mBarcodeScanner->startSession();
-			break;
-		case KeyEvent::KEY_n:
-			CI_LOG_V("StopSession");
-			mBarcodeScanner->stopSession();
-			break;
-		case KeyEvent::KEY_z:
-			CI_LOG_V("Sleep");
-			mBarcodeScanner->sleep();
-			break;
-		case KeyEvent::KEY_w:
-			CI_LOG_V("Wake");
-			mBarcodeScanner->wake();
-			break;
-	}
 }
 
 void BarcodeBasicApp::update() {
+	// Barcode reader hooks into the update signal on its own as necessary
 }
 
 void BarcodeBasicApp::draw() {
 	gl::clear(Color(0, 0, 0));
+	gl::drawStringCentered("Scanned: " + mBarcodeScanner->getLatestBarcode(), getWindowCenter(), ci::Color("magenta"), ci::Font("Helvetica", 20.0));
+	mParams->draw();
 }
 
 CINDER_APP(BarcodeBasicApp, RendererGl)

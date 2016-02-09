@@ -82,6 +82,14 @@ void BarcodeScanner::simulateScan(std::string barcode) {
 	mSignalBarcodeScanned.emit(mLatestBarcode);
 }
 
+const std::string BarcodeScanner::getLatestBarcode() const {
+	return mLatestBarcode;
+}
+
+ci::signals::Signal<void(std::string)> *BarcodeScanner::getSignalBarcodeScanned() {
+	return &mSignalBarcodeScanned;
+}
+
 void BarcodeScanner::enable() {
 	sendMessage(0xE9);
 }

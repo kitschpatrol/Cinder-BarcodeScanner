@@ -2,6 +2,8 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Serial.h"
+#include "cinder/Signals.h"
+#include "cinder/Timer.h"
 
 namespace kp {
 namespace barcode {
@@ -49,7 +51,7 @@ private:
 	std::string mSerialReadBuffer;
 	std::string mLatestBarcode;
 
-	const double MAX_RECEIVE_INTERVAL = 0.1;
+	const double MAX_RECEIVE_INTERVAL = 0.01; // seconds
 };
 
 } // namespace barcode
