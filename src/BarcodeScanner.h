@@ -8,6 +8,7 @@
 namespace kp {
 namespace barcode {
 
+class BarcodeScanner;
 typedef std::shared_ptr<class BarcodeScanner> BarcodeScannerRef;
 
 class BarcodeScanner : public std::enable_shared_from_this<BarcodeScanner> {
