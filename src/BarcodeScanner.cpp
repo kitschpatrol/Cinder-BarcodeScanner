@@ -18,12 +18,13 @@ BarcodeScanner::BarcodeScanner(std::string serialPortName) {
 	try {
 		ci::Serial::Device dev = ci::Serial::Device(serialPortName);
 		mSerial = ci::Serial::create(dev, 57600);
-	} catch (ci::SerialExc &exc) {
+	} catch (std::exception &exc) {
 		CI_LOG_EXCEPTION("Could not initialize the serial device", exc);
-		exit(-1);
+		return;
+		//exit(-1);
 	}
-	mSerial->flush();
 
+	mSerial->flush();
 	mSignalConnectionUpdate = ci::app::App::get()->getSignalUpdate().connect(std::bind(&BarcodeScanner::update, this));
 	mSerialTimer.start();
 }
@@ -66,7 +67,9 @@ void BarcodeScanner::sendMessage(uint8_t opCode, std::vector<uint8_t> parameters
 	message.push_back(checksum & 0xff);				 // low byte
 
 	// Send it
-	mSerial->writeBytes(&message[0], message.size());
+	if (mSerial) {
+		mSerial->writeBytes(&message[0], message.size());
+	}
 };
 
 uint16_t BarcodeScanner::calculateChecksum(std::vector<uint8_t> bytes) {
@@ -139,7 +142,9 @@ void BarcodeScanner::sleep() {
 }
 
 void BarcodeScanner::wake() {
+	if(mSerial) {
 	mSerial->writeByte(0);
+	}
 }
 
 } // namespace barcode
