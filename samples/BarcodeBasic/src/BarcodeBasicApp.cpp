@@ -1,9 +1,9 @@
 #include "cinder/Log.h"
+#include "cinder/Rand.h"
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/params/Params.h"
-#include "cinder/Rand.h"
 
 #include "BarcodeScanner.h"
 
@@ -18,7 +18,7 @@ public:
 	void update() override;
 	void draw() override;
 	BarcodeScannerRef mBarcodeScanner;
-	ci::params::InterfaceGlRef	mParams;
+	ci::params::InterfaceGlRef mParams;
 };
 
 void BarcodeBasicApp::setup() {
@@ -26,11 +26,16 @@ void BarcodeBasicApp::setup() {
 	mBarcodeScanner = BarcodeScanner::create("COM3");
 
 	mBarcodeScanner->getSignalBarcodeScanned()->connect([](std::string barcode) { //
-		CI_LOG_V("Scanned: " + barcode);                                          //
+		CI_LOG_V("Scanned: " + barcode);																						//
 	});
 
 	// Not all scanners will support all of these options.
-	mParams = params::InterfaceGl::create("Params", ivec2(170, 300));
+	mParams = params::InterfaceGl::create("Params", ivec2(300, 400));
+	mParams->addText("Status");
+	mParams->addParam<std::string>("Barcode", [](std::string value) {}, [&]() { return mBarcodeScanner->getLatestBarcode(); });
+	mParams->addParam<std::string>("Connected", [](std::string value) {}, [&]() { return mBarcodeScanner->isConnected() ? "Yes" : "No"; });
+	mParams->addSeparator();
+	mParams->addText("Controls");
 	mParams->addButton("Beep", std::bind(&BarcodeScanner::beep, mBarcodeScanner), "key=b");
 	mParams->addButton("Enable", std::bind(&BarcodeScanner::enable, mBarcodeScanner), "key=e");
 	mParams->addButton("Disable", std::bind(&BarcodeScanner::disable, mBarcodeScanner), "key=d");
@@ -44,12 +49,13 @@ void BarcodeBasicApp::setup() {
 	mParams->addButton("Stop Session", std::bind(&BarcodeScanner::stopSession, mBarcodeScanner), "key=p");
 	mParams->addButton("Sleep", std::bind(&BarcodeScanner::sleep, mBarcodeScanner), "key=z");
 	mParams->addButton("Wake", std::bind(&BarcodeScanner::wake, mBarcodeScanner), "key=w");
-	mParams->addButton("Simulate", [&]() {
-		std::string randomBarcode = std::to_string(randInt(100000000, 999999999));
-		mBarcodeScanner->simulateScan(randomBarcode);
-		mBarcodeScanner->beep();
-	}, "key=b");
-
+	mParams->addButton("Simulate",
+										 [&]() {
+											 std::string randomBarcode = std::to_string(randInt(100000000, 999999999));
+											 mBarcodeScanner->simulateScan(randomBarcode);
+											 mBarcodeScanner->beep();
+										 },
+										 "key=b");
 }
 
 void BarcodeBasicApp::update() {
@@ -58,7 +64,6 @@ void BarcodeBasicApp::update() {
 
 void BarcodeBasicApp::draw() {
 	gl::clear(Color(0, 0, 0));
-	gl::drawStringCentered("Scanned: " + mBarcodeScanner->getLatestBarcode(), getWindowCenter(), ci::Color("magenta"), ci::Font("Helvetica", 20.0));
 	mParams->draw();
 }
 
