@@ -16,6 +16,8 @@ public:
 	static BarcodeScannerRef create(std::string serialPortName);
 	~BarcodeScanner();
 
+	bool isConnected();
+
 	// See Motorola's documentation for more info on these.
 	// https://atgsupportcentral.motorolasolutions.com/content/emb/docs/manuals/4045103a.pdf
 	void beep();
@@ -40,6 +42,10 @@ protected:
 	BarcodeScanner(std::string serialPortName);
 
 private:
+	void connect();
+
+	std::string mSerialPortName;
+
 	ci::SerialRef mSerial;
 	void sendMessage(uint8_t opCode, std::vector<uint8_t> parameters = {});
 	uint16_t calculateChecksum(std::vector<uint8_t> bytes);

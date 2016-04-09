@@ -13,18 +13,7 @@ BarcodeScannerRef BarcodeScanner::create(std::string serialPortName) {
 }
 
 BarcodeScanner::BarcodeScanner(std::string serialPortName) {
-	// Discovery of virtual devices is broken, so we have to pass in the port name manually:
-	// https://forum.libcinder.org/topic/rfc-windows-serial-device-discovery-rewrite
-	try {
-		ci::Serial::Device dev = ci::Serial::Device(serialPortName);
-		mSerial = ci::Serial::create(dev, 9600);
-	} catch (std::exception &exc) {
-		CI_LOG_EXCEPTION("Could not initialize the serial device", exc);
-		return;
-		// exit(-1);
-	}
-
-	mSerial->flush();
+	mSerialPortName = serialPortName;
 	mSignalConnectionUpdate = ci::app::App::get()->getSignalUpdate().connect(std::bind(&BarcodeScanner::update, this));
 	mSerialTimer.start();
 }
@@ -33,11 +22,49 @@ BarcodeScanner::~BarcodeScanner() {
 	mSignalConnectionUpdate.disconnect();
 }
 
+bool BarcodeScanner::isConnected() {
+	// check pointer
+	if (mSerial == nullptr) {
+		return false;
+	}
+
+	// test connection
+	try {
+		mSerial->getNumBytesAvailable();
+	} catch (std::exception &exc) {
+		return false;
+	}
+
+	// probable there
+	return true;
+}
+
+void BarcodeScanner::connect() {
+	CI_LOG_V("Attempting connection to barcode scanner on port " << mSerialPortName);
+
+	// Discovery of virtual devices is broken, so we have to pass in the port name manually:
+	// https://forum.libcinder.org/topic/rfc-windows-serial-device-discovery-rewrite
+	try {
+		ci::Serial::Device dev = ci::Serial::Device(mSerialPortName);
+		mSerial = ci::Serial::create(dev, 9600);
+	} catch (std::exception &exc) {
+		CI_LOG_EXCEPTION("Could not initialize the serial device", exc);
+		return;
+	}
+
+	CI_LOG_V("Successfully connected to barcode scanner on port " << mSerialPortName);
+	mSerial->flush();
+}
+
 void BarcodeScanner::update() {
 	// Read from serial
-	while ((mSerial->getNumBytesAvailable() > 0)) {
-		mSerialReadBuffer += mSerial->readChar();
-		mSerialTimer.start(); // reset the timer
+	if (isConnected()) {
+		while ((mSerial->getNumBytesAvailable() > 0)) {
+			mSerialReadBuffer += mSerial->readChar();
+			mSerialTimer.start(); // reset the timer
+		}
+	} else {
+		connect();
 	}
 
 	// If we have something, and we haven't seen any bytes over seral in a while, then send out a barcode signal
@@ -49,25 +76,26 @@ void BarcodeScanner::update() {
 }
 
 void BarcodeScanner::sendMessage(uint8_t opCode, std::vector<uint8_t> parameters) {
-	std::vector<uint8_t> message = {opCode};
-	message.push_back(0x04); // Message source, we're the host
-	message.push_back(0x00); // Status, First transmission, temporary change
+	if (isConnected()) {
 
-	// Add any parameters, if any
-	for (uint8_t param : parameters) {
-		message.push_back(param);
-	}
+		std::vector<uint8_t> message = {opCode};
+		message.push_back(0x04); // Message source, we're the host
+		message.push_back(0x00); // Status, First transmission, temporary change
 
-	// Prepend length
-	message.insert(message.begin(), message.size() + 1);
+		// Add any parameters, if any
+		for (uint8_t param : parameters) {
+			message.push_back(param);
+		}
 
-	// Add checksum
-	uint16_t checksum = calculateChecksum(message);
-	message.push_back((checksum >> 8) & 0xff); // high byte
-	message.push_back(checksum & 0xff);				 // low byte
+		// Prepend length
+		message.insert(message.begin(), message.size() + 1);
 
-	// Send it
-	if (mSerial) {
+		// Add checksum
+		uint16_t checksum = calculateChecksum(message);
+		message.push_back((checksum >> 8) & 0xff); // high byte
+		message.push_back(checksum & 0xff);				 // low byte
+
+		// Send it
 		mSerial->writeBytes(&message[0], message.size());
 	}
 };
@@ -142,7 +170,7 @@ void BarcodeScanner::sleep() {
 }
 
 void BarcodeScanner::wake() {
-	if (mSerial) {
+	if (isConnected()) {
 		mSerial->writeByte(0);
 	}
 }
