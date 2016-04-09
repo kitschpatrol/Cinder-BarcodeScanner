@@ -19,9 +19,9 @@ First, set up your barcode scanner:
 If you're using a USB barcode scanner, install the [latest USB CDC driver from Motorola's support site](https://portal.motorolasolutions.com/Support/US-EN/Resolution?solutionId=5201&redirectForm=search&searchQuery=%3fsearchType=simple&searchTerm=usb%2520cdc%2520scanner%2520driver).
 
 Scan the barcodes in `docs/Barcode Scanner Setup.pdf` to configure your scanner to work with this library.  Scanning these codes does the following:
- 
+
+- Resets your scanner to factory settings. 
 - Tells your scanner to use the SSI over USB CDC protocol.
-- Sets the serial baud rate to 57.6kbps.
 - Disables acknowledgments. This means you can send any command packets you'd like, but you will only ever receive scanned barcodes values in ASCII from the scanner.
 
 Due to [issues in Cinder with virtual device discovery on Windows](https://forum.libcinder.org/topic/rfc-windows-serial-device-discovery-rewrite), you'll need to find the serial port name of your scanner manually through the Device Manager or other means.

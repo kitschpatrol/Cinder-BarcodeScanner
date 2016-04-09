@@ -17,11 +17,11 @@ BarcodeScanner::BarcodeScanner(std::string serialPortName) {
 	// https://forum.libcinder.org/topic/rfc-windows-serial-device-discovery-rewrite
 	try {
 		ci::Serial::Device dev = ci::Serial::Device(serialPortName);
-		mSerial = ci::Serial::create(dev, 57600);
+		mSerial = ci::Serial::create(dev, 9600);
 	} catch (std::exception &exc) {
 		CI_LOG_EXCEPTION("Could not initialize the serial device", exc);
 		return;
-		//exit(-1);
+		// exit(-1);
 	}
 
 	mSerial->flush();
@@ -142,8 +142,8 @@ void BarcodeScanner::sleep() {
 }
 
 void BarcodeScanner::wake() {
-	if(mSerial) {
-	mSerial->writeByte(0);
+	if (mSerial) {
+		mSerial->writeByte(0);
 	}
 }
 
