@@ -45,6 +45,8 @@ private:
 	void connect();
 
 	std::string mSerialPortName;
+	bool mWasConnected = false;
+
 
 	ci::SerialRef mSerial;
 	void sendMessage(uint8_t opCode, std::vector<uint8_t> parameters = {});

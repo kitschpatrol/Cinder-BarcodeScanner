@@ -32,6 +32,7 @@ bool BarcodeScanner::isConnected() {
 	try {
 		mSerial->getNumBytesAvailable();
 	} catch (std::exception &exc) {
+		//CI_LOG_EXCEPTION(Serial device not connected", exc);
 		return false;
 	}
 
@@ -40,19 +41,16 @@ bool BarcodeScanner::isConnected() {
 }
 
 void BarcodeScanner::connect() {
-	CI_LOG_V("Attempting connection to barcode scanner on port " << mSerialPortName);
-
 	// Discovery of virtual devices is broken, so we have to pass in the port name manually:
 	// https://forum.libcinder.org/topic/rfc-windows-serial-device-discovery-rewrite
 	try {
 		ci::Serial::Device dev = ci::Serial::Device(mSerialPortName);
 		mSerial = ci::Serial::create(dev, 9600);
 	} catch (std::exception &exc) {
-		CI_LOG_EXCEPTION("Could not initialize the serial device", exc);
+		//CI_LOG_EXCEPTION("Could not initialize the serial device", exc);
 		return;
 	}
 
-	CI_LOG_V("Successfully connected to barcode scanner on port " << mSerialPortName);
 	mSerial->flush();
 }
 
@@ -63,7 +61,18 @@ void BarcodeScanner::update() {
 			mSerialReadBuffer += mSerial->readChar();
 			mSerialTimer.start(); // reset the timer
 		}
+
+		if (!mWasConnected) {
+			CI_LOG_V("Successfully connected to barcode scanner on port " << mSerialPortName);
+			mWasConnected = true;
+		}
+
 	} else {
+		if (mWasConnected) {
+			CI_LOG_V("Attempting connection to barcode scanner on port " << mSerialPortName);
+			mWasConnected = false;
+		}
+
 		connect();
 	}
 
