@@ -55,5 +55,9 @@ ci::signals::Signal<void(std::string)> *BarcodeScannerKeyboard::getSignalBarcode
 	return &mSignalBarcodeScanned;
 }
 
+void BarcodeScannerKeyboard::beep() const {
+	CI_LOG_V("Beep!");
+}
+
 } // namespace barcode
 } // namespace kp

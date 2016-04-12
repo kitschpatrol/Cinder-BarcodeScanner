@@ -19,6 +19,8 @@ public:
 	const std::string getLatestBarcode() const;
 	ci::signals::Signal<void(std::string)> *getSignalBarcodeScanned();
 
+	void beep() const;
+	
 protected:
 	BarcodeScannerKeyboard();
 
