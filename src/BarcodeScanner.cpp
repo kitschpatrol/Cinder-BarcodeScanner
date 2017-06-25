@@ -14,8 +14,10 @@ BarcodeScannerRef BarcodeScanner::create(std::string serialPortName) {
 
 BarcodeScanner::BarcodeScanner(std::string serialPortName) {
 	mSerialPortName = serialPortName;
-	mSignalConnectionUpdate = ci::app::App::get()->getSignalUpdate().connect(std::bind(&BarcodeScanner::update, this));
-	mSerialTimer.start();
+	if (mSerialPortName != "") {
+		mSignalConnectionUpdate = ci::app::App::get()->getSignalUpdate().connect(std::bind(&BarcodeScanner::update, this));
+		mSerialTimer.start();
+	}
 }
 
 BarcodeScanner::~BarcodeScanner() {
