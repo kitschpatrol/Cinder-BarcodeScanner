@@ -18,8 +18,8 @@ public:
 
 	bool isConnected();
 
-	// See Motorola's documentation for more info on these.
-	// https://atgsupportcentral.motorolasolutions.com/content/emb/docs/manuals/4045103a.pdf
+	// See Zebra's SSI Programmer's Guide (mirrored by BSR) for more info on these.
+	// https://www.bsr.at/wp-content/uploads/DS3600_Simple-Serial-Interface-Programmer-Guide.pdf
 	void beep();
 	void enable();
 	void disable();

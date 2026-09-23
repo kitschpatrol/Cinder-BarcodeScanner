@@ -1,0 +1,6 @@
+# These DS457 resources were verified manually on 2026-09-23, but Zebra
+# returns HTTP 406 to the GitHub Actions link checker (likely bot filtering).
+# Keep these exceptions URL-specific; recheck the resources manually.
+^https://www\.zebra\.com/content/dam/support-dam/en/documentation/unrestricted/guide/product/ds457-integration-guide-en-us\.pdf$
+^https://www\.zebra\.com/us/en/products/spec-sheets/scanners/fixed-mount-scanners/ds457\.html$
+^https://www\.zebra\.com/us/en/support-downloads/scanners/fixed-mount-scanners/ds457\.html$
