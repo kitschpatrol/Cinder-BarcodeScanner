@@ -55,7 +55,7 @@ void BarcodeBasicApp::setup() {
 											 mBarcodeScanner->simulateScan(randomBarcode);
 											 mBarcodeScanner->beep();
 										 },
-										 "key=b");
+										 "key=r");
 }
 
 void BarcodeBasicApp::update() {

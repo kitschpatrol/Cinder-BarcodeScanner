@@ -34,17 +34,17 @@ bool BarcodeScanner::isConnected() {
 	try {
 		mSerial->getNumBytesAvailable();
 	} catch (std::exception &exc) {
-		//CI_LOG_EXCEPTION(Serial device not connected", exc);
+		//CI_LOG_EXCEPTION("Serial device not connected", exc);
 		return false;
 	}
 
-	// probable there
+	// probably there
 	return true;
 }
 
 void BarcodeScanner::connect() {
 	// Discovery of virtual devices is broken, so we have to pass in the port name manually:
-	// https://forum.libcinder.org/topic/rfc-windows-serial-device-discovery-rewrite
+	// https://web.archive.org/web/20140807195749/http://forum.libcinder.org/topic/rfc-windows-serial-device-discovery-rewrite
 	try {
 		ci::Serial::Device dev = ci::Serial::Device(mSerialPortName);
 		mSerial = ci::Serial::create(dev, 9600);
@@ -78,7 +78,7 @@ void BarcodeScanner::update() {
 		connect();
 	}
 
-	// If we have something, and we haven't seen any bytes over seral in a while, then send out a barcode signal
+	// If we have something, and we haven't seen any bytes over serial in a while, then send out a barcode signal
 	if ((mSerialReadBuffer.size() > 0) && (mSerialTimer.getSeconds() > MAX_RECEIVE_INTERVAL)) {
 		mLatestBarcode = mSerialReadBuffer;
 		mSignalBarcodeScanned.emit(mLatestBarcode);

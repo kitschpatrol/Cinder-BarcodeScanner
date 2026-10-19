@@ -1,0 +1,45 @@
+{
+  "@context": "https://w3id.org/codemeta/3.1",
+  "@type": "SoftwareSourceCode",
+  "name": "Cinder-BarcodeScanner",
+  "identifier": "com.kitschpatrol.barcode",
+  "version": "1.0.0",
+  "description": "CinderBlock for communicating with barcode scanners using the Simple Serial Interface.",
+  "author": {
+    "@type": "Person",
+    "email": "eric@ericmika.com",
+    "name": "Eric Mika",
+    "url": "https://ericmika.com"
+  },
+  "keywords": [
+    "cinder",
+    "cinderblock",
+    "barcode-scanner",
+    "serial-port",
+    "simple-serial-interface",
+    "zebra"
+  ],
+  "programmingLanguage": "C++",
+  "operatingSystem": [
+    "Windows",
+    "macOS"
+  ],
+  "url": "https://github.com/kitschpatrol/Cinder-BarcodeScanner",
+  "codeRepository": "https://github.com/kitschpatrol/Cinder-BarcodeScanner.git",
+  "issueTracker": "https://github.com/kitschpatrol/Cinder-BarcodeScanner/issues",
+  "license": "https://spdx.org/licenses/MIT",
+  "dateCreated": "2016-02-05",
+  "softwareRequirements": [
+    {
+      "@type": "SoftwareSourceCode",
+      "name": "Cinder",
+      "codeRepository": "https://github.com/cinder/Cinder.git",
+      "version": "0.9.2dev"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Simple Serial Interface (SSI)",
+      "url": "https://www.bsr.at/wp-content/uploads/DS3600_Simple-Serial-Interface-Programmer-Guide.pdf"
+    }
+  ]
+}
